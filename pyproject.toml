@@ -11,6 +11,8 @@ asyncpg = "^0.27.0"
 aiogram = {url = "https://github.com/aiogram/aiogram/archive/refs/heads/dev-3.x.zip"}
 anilibria-py = {git = "https://github.com/Damego/anilibria.py.git"}
 python-dotenv = "^0.21.1"
+selenium = "^4.8.0"
+webdriver-manager = "^3.8.5"
 
 
 [build-system]
