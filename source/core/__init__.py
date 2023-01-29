@@ -1,1 +1,1 @@
-from .client import AiogramClient
+from .aiogram_client import AiogramClient
