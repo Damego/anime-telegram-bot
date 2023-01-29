@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "anime-telegram-bot"
+version = "0.1.0"
+description = ""
+authors = ["Damego <danyabatueff@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+asyncpg = "^0.27.0"
+aiogram = {url = "https://github.com/aiogram/aiogram/archive/refs/heads/dev-3.x.zip"}
+anilibria-py = {git = "https://github.com/Damego/anilibria.py.git"}
+python-dotenv = "^0.21.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
