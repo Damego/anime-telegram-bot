@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class VarChar:
     def __init__(self, max_chars: int):
         self.max_chars: int = max_chars
@@ -15,7 +18,7 @@ class BaseModel:
         return instance
 
     @classmethod
-    def __kwargs_from_args(cls, args):
+    def __kwargs_from_args(cls, args) -> dict[str, Any]:
         return {
             key: arg
             for key, arg in zip(cls.__annotations__, args)
@@ -23,20 +26,27 @@ class BaseModel:
 
     @classmethod
     def __parse_annotations(cls) -> list[str]:
-        annotations: list[str] = []
+        columns: list[str] = []
+        annotations = {}
+        _class = cls
 
-        for attr_name, type in cls.__annotations__.items():
+        while _class is not BaseModel:
+            annotations |= _class.__annotations__
+            _class = _class.__base__
+        # TODO: Reverse dict keys
+
+        for attr_name, type in annotations.items():
             is_null = attr_name in cls.__dict__
 
             if attr_name == "id":
-                annotations.append("id SERIAL PRIMARY KEY")
+                columns.append("id SERIAL PRIMARY KEY")
                 continue
 
-            annotations.append(
+            columns.append(
                 f"{attr_name} {cls._convert_type(type)} {'NOT NULL' if not is_null else ''}"
             )
 
-        return annotations
+        return columns
 
     @staticmethod
     def _convert_type(type_: type) -> str:
@@ -56,8 +66,11 @@ class BaseModel:
                "\n)"
 
 
-class MyTable(BaseModel):
+class IDTable(BaseModel):
     id: int
+
+
+class MyTable(IDTable):
     name: VarChar(50)
     f: str = None
 
