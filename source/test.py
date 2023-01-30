@@ -5,23 +5,23 @@ class VarChar:
 
 class BaseModel:
     def __new__(cls, *args, **kwargs):
-        print(cls.__annotations__)
-        print(cls.__dict__)
+        instance = super().__new__(cls)
+        instance.__types = cls.__parse_annotations()
+        return instance
 
-        return super().__new__(cls)
-
-    def parse_annotations(self) -> list[str]:
+    @classmethod
+    def __parse_annotations(cls) -> list[str]:
         annotations: list[str] = []
 
-        for attr_name, type in self.__annotations__.items():
-            is_null = attr_name in self.__dict__
+        for attr_name, type in cls.__annotations__.items():
+            is_null = attr_name in cls.__dict__
 
             if attr_name == "id":
                 annotations.append("id SERIAL PRIMARY KEY")
                 continue
 
             annotations.append(
-                f"{attr_name} {self._convert_type(type)} {'NOT NULL' if not is_null else ''}"
+                f"{attr_name} {cls._convert_type(type)} {'NOT NULL' if not is_null else ''}"
             )
 
         return annotations
@@ -36,14 +36,21 @@ class BaseModel:
             str: "TEXT",
         }.get(type_)
 
+    def create(self, name: str = None, check_for_exists: bool = True) -> str:
+        types = ",\n".join(self.__types)
 
-class Table(BaseModel):
+        return f"CREATE TABLE {'IF NOT EXISTS' if check_for_exists else ''} {name or self.__class__.__name__.lower()} (" \
+               f"\n{types}" \
+               "\n)"
+
+
+class MyTable(BaseModel):
     id: int
     name: VarChar(50)
     f: str = None
 
 
-table = Table(
+table = MyTable(
     name="asf"
 )
-print(table.parse_annotations())
+print(table.create())
