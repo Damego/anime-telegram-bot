@@ -7,7 +7,19 @@ class BaseModel:
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
         instance.__types = cls.__parse_annotations()
+
+        if data := kwargs or cls.__kwargs_from_args(args):
+            for key, value in data.items():
+                setattr(instance, key, value)
+
         return instance
+
+    @classmethod
+    def __kwargs_from_args(cls, args):
+        return {
+            key: arg
+            for key, arg in zip(cls.__annotations__, args)
+        }
 
     @classmethod
     def __parse_annotations(cls) -> list[str]:
@@ -51,6 +63,8 @@ class MyTable(BaseModel):
 
 
 table = MyTable(
-    name="asf"
+    123,
+    "test name"
 )
 print(table.create())
+print(table.name)
