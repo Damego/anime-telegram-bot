@@ -3,6 +3,9 @@ from typing import Any
 __all__ = ("CursedTypedDict", )
 
 
+# Not a typed dict because there are no dict helper methods
+# Not a typed tuple because you can't iterate over it
+# What is it then?
 class CursedTypedDict:
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
