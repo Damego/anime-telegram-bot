@@ -4,7 +4,8 @@ from aiogram.types import Message
 import anilibria
 from dotenv import load_dotenv
 
-from core.database.client import PostgreClient
+from database.client import PostgreClient
+from database.tables import TestTable
 from core import AiogramClient
 from core.parsers.parser import Parser
 from utils.responses import title_episode_text
@@ -25,6 +26,7 @@ postgres = PostgreClient(
     user=environ["USER"],
     password=environ["PASSWORD"]
 )
+
 
 @anilibria_client.event()
 async def on_title_episode(event: anilibria.TitleEpisode):
@@ -57,7 +59,9 @@ async def manga(message: Message):
 @client.command()
 async def db(message: Message):
     await postgres.connect()
-    await postgres.create_tables()
+
+    table = TestTable(id=123, name="me", client=postgres)
+    await table.create()
 
 
 if __name__ == "__main__":

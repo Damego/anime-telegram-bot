@@ -39,3 +39,12 @@ class CursedTypedDict:
             _class = _class.__base__
 
         return {k: v for k, v in annotation_list[::-1]}
+
+    @property
+    def json(self) -> dict:
+        json = {
+            k: getattr(self, k)
+            for k in self.__all_annotations__()
+        }
+
+        return json
