@@ -21,11 +21,11 @@ anilibria_client = anilibria.AniLibriaClient()
 # manga = Parser(webdriver, "mangalib.me")
 # ranobe = Parser(webdriver, "ranobelib.me")
 
-postgres = PostgreClient(
-    host=environ["HOST"],
-    user=environ["USER"],
-    password=environ["PASSWORD"]
-)
+# postgres = PostgreClient(
+#     host=environ["HOST"],
+#     user=environ["USER"],
+#     password=environ["PASSWORD"]
+# )
 
 
 @anilibria_client.event()
@@ -57,14 +57,27 @@ async def manga(message: Message):
 
 
 @client.command()
-async def db(message: Message):
-    await postgres.connect()
+async def test(message: Message, arg: int, string: str):
+    print(arg, type(arg))
+    print(string, type(string))
+    
+    await message.answer(str(arg))
 
-    table = TestTable(id=123, name="me", client=postgres)
-    await table.create()
+@client.command()
+async def arg(message: Message, arg: str):
+    await message.answer(str(arg) + " your argument")
+
+
+# @client.command()
+# async def db(message: Message):
+#     await postgres.connect()
+
+#     table = TestTable(id=123, name="me", client=postgres)
+#     await table.create()
 
 
 if __name__ == "__main__":
-    anilibria_client.startwith(
-        client.astart(environ["TOKEN"])
-    )
+    client.start(environ["TOKEN"])
+    # anilibria_client.startwith(
+    #     client.astart(environ["TOKEN"])
+    # )
