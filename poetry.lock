@@ -14,34 +14,28 @@ files = [
 
 [[package]]
 name = "aiogram"
-version = "3.0.0b7"
+version = "3.0.0b6"
 description = "Modern and fully asynchronous framework for Telegram Bot API"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "dev-3.x.zip", hash = "sha256:889afeea3c98e40818ffb4a9f85eca28ab21c4366ca957ee7a022cecc2d25de3"},
+    {file = "aiogram-3.0.0b6-py3-none-any.whl", hash = "sha256:0fc67867a4f12d22871d3b0244e1019c9ff8a18859a48cf82aa0d29c555ad01b"},
+    {file = "aiogram-3.0.0b6.tar.gz", hash = "sha256:2f4382ca23a8ae45d9d1016307ea576b8e11fc0ca5235be03f138934c35602cb"},
 ]
 
 [package.dependencies]
-aiofiles = ">=22.1.0,<22.2.0"
-aiohttp = ">=3.8.3,<3.9.0"
-certifi = ">=2022.9.24"
-magic-filter = ">=1.0.9,<1.1.0"
-pydantic = ">=1.10.4,<1.11.0"
+aiofiles = ">=22.1.0,<23.0.0"
+aiohttp = ">=3.8.3,<4.0.0"
+certifi = ">=2022.9.24,<2023.0.0"
+magic-filter = ">=1.0.9,<2.0.0"
+pydantic = ">=1.10.2,<2.0.0"
 
 [package.extras]
-dev = ["black (>=22.8,<23.0)", "isort (>=5.11,<6.0)", "mypy (>=0.981,<1.0)", "packaging (>=21.3,<22.0)", "pre-commit (>=2.20.0,<2.21.0)", "ruff (>=0.0.215,<0.1.0)", "toml (>=0.10.2,<0.11.0)", "typing-extensions (>=4.3.0,<4.4.0)"]
-docs = ["furo (>=2022.9.29,<2022.10.0)", "markdown-include (>=0.7.0,<0.8.0)", "pygments (>=2.13.0,<2.14.0)", "pygments (>=2.4,<3.0)", "pymdown-extensions (>=9.6,<10.0)", "sphinx (>=5.2.3,<5.3.0)", "sphinx-autobuild (>=2021.3.14,<2021.4.0)", "sphinx-copybutton (>=0.5.0,<0.6.0)", "sphinx-intl (>=2.0.1,<2.1.0)", "sphinx-prompt (>=1.5.0,<1.6.0)", "sphinx-substitution-extensions (>=2022.2.16,<2022.3.0)", "sphinxcontrib-towncrier (>=0.3.1a3,<0.4.0)", "towncrier (>=22.8.0,<22.9.0)"]
-fast = ["uvloop (>=0.17.0)"]
-i18n = ["babel (>=2.9.1,<2.10.0)"]
+fast = ["uvloop (>=0.17.0,<0.18.0)"]
+i18n = ["Babel (>=2.9.1,<3.0.0)"]
 proxy = ["aiohttp-socks (>=0.7.1,<0.8.0)"]
-redis = ["redis (>=4.3.4,<4.4.0)"]
-test = ["aresponses (>=2.1.6,<2.2.0)", "pytest (>=7.1.3,<7.2.0)", "pytest-aiohttp (>=1.0.4,<1.1.0)", "pytest-asyncio (>=0.19.0,<0.20.0)", "pytest-cov (>=4.0.0,<4.1.0)", "pytest-html (>=3.1.1,<3.2.0)", "pytest-lazy-fixture (>=0.6.3,<0.7.0)", "pytest-mock (>=3.9.0,<3.10.0)", "pytest-mypy (>=0.10.0,<0.11.0)"]
-
-[package.source]
-type = "url"
-url = "https://github.com/aiogram/aiogram/archive/refs/heads/dev-3.x.zip"
+redis = ["redis (>=4.3.4,<5.0.0)"]
 
 [[package]]
 name = "aiohttp"
@@ -173,21 +167,21 @@ version = "1.0.0"
 description = "An async API wrapper for the anilibria.tv"
 category = "main"
 optional = false
-python-versions = "^3.10"
-files = []
-develop = false
+python-versions = ">=3.10"
+files = [
+    {file = "anilibria.py-1.0.0-py3-none-any.whl", hash = "sha256:325a757e73886d10db519d308e80cc470fe8ee7d2906d6ab5b6c06b7e45fdfa9"},
+    {file = "anilibria.py-1.0.0.tar.gz", hash = "sha256:ec543071f368395d051a7e32b93eabd886a61acd7b4ab97123506e6bfc221c82"},
+]
 
 [package.dependencies]
-aiohttp = "^3.8.3"
-attrs = "^22.2.0"
-cattrs = "^22.2.0"
-orjson = "^3.8.5"
+aiohttp = "3.8.3"
+attrs = "22.2.0"
+cattrs = "22.2.0"
+orjson = "3.8.5"
+tomli = "2.0.1"
 
-[package.source]
-type = "git"
-url = "https://github.com/Damego/anilibria.py.git"
-reference = "HEAD"
-resolved_reference = "c4849227b5c2896b464a1cc7f1e938f093e5c43d"
+[package.extras]
+readthedocs = ["Sphinx", "furo", "readthedocs-sphinx-search", "sphinx-hoverxref"]
 
 [[package]]
 name = "async-generator"
@@ -297,6 +291,7 @@ files = [
 
 [package.dependencies]
 attrs = ">=20"
+exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "certifi"
@@ -413,6 +408,21 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
+
+[[package]]
+name = "exceptiongroup"
+version = "1.1.0"
+description = "Backport of PEP 654 (exception groups)"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "exceptiongroup-1.1.0-py3-none-any.whl", hash = "sha256:327cbda3da756e2de031a3107b81ab7b3770a602c4d16ca618298c526f4bec1e"},
+    {file = "exceptiongroup-1.1.0.tar.gz", hash = "sha256:bcb67d800a4497e1b404c2dd44fca47d3b7a5e5433dbab67f96c1a685cdfdf23"},
+]
+
+[package.extras]
+test = ["pytest (>=6)"]
 
 [[package]]
 name = "frozenlist"
@@ -857,6 +867,18 @@ files = [
 ]
 
 [[package]]
+name = "tomli"
+version = "2.0.1"
+description = "A lil' TOML parser"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
+    {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
+]
+
+[[package]]
 name = "tqdm"
 version = "4.64.1"
 description = "Fast, Extensible Progress Meter"
@@ -893,6 +915,7 @@ files = [
 async-generator = ">=1.9"
 attrs = ">=19.2.0"
 cffi = {version = ">=1.14", markers = "os_name == \"nt\" and implementation_name != \"pypy\""}
+exceptiongroup = {version = ">=1.0.0rc9", markers = "python_version < \"3.11\""}
 idna = "*"
 outcome = "*"
 sniffio = "*"
@@ -1070,5 +1093,5 @@ multidict = ">=4.0"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.11"
-content-hash = "6a600227d06694e3768d0f813481272a94309254b072682a17185e955262bcf8"
+python-versions = "^3.10"
+content-hash = "4dd093a27a1c7f723a21111e74ddf65773751f09e764b5d2c35b62eb12e91173"

@@ -6,13 +6,13 @@ authors = ["Damego <danyabatueff@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 asyncpg = "^0.27.0"
-aiogram = {url = "https://github.com/aiogram/aiogram/archive/refs/heads/dev-3.x.zip"}
-anilibria-py = {git = "https://github.com/Damego/anilibria.py.git"}
 python-dotenv = "^0.21.1"
 selenium = "^4.8.0"
 webdriver-manager = "^3.8.5"
+aiogram = {version = "^3.0.0b6", allow-prereleases = true}
+anilibria-py = "^1.0.0"
 
 
 [build-system]
