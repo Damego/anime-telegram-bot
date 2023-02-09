@@ -10,6 +10,9 @@ def get_command_args(coro: Callable[..., Coroutine], message: Message) -> dict[s
     raw_args = message.text.split(maxsplit=1)[1]  # Remove command text
     parameters = list(signature(coro).parameters.values())[1:]  # Ignore message parameter
 
+    if not parameters:
+        return {}
+
     if len(parameters) == 1:
         param = parameters[0]
         if param.annotation in {str, param.empty}:
