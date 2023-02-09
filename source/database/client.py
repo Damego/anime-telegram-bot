@@ -23,17 +23,14 @@ class PostgreClient:
         await self.connection.execute(
             """
             CREATE TABLE anime(
-                id SERIAL PRIMARY KEY,
                 user_id INT NOT NULL,
-                anime_id INT NOT NULL,
-                chapter varchar(50) NOT NULL
+                anime_code varchar(255) NOT NULL
             )
             """
         )
         await self.connection.execute(
             """
             CREATE TABLE manga(
-                id SERIAL PRIMARY KEY,
                 user_id INT NOT NULL,
                 manga_code varchar(255) NOT NULL,
                 chapter varchar(50) NOT NULL
@@ -43,7 +40,6 @@ class PostgreClient:
         await self.connection.execute(
             """
             CREATE TABLE ranobe(
-                id SERIAL PRIMARY KEY,
                 user_id INT NOT NULL,
                 ranobe_code varchar(255) NOT NULL,
                 chapter varchar(50) NOT NULL
