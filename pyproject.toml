@@ -12,7 +12,7 @@ python-dotenv = "^0.21.1"
 selenium = "^4.8.0"
 webdriver-manager = "^3.8.5"
 aiogram = {version = "^3.0.0b6", allow-prereleases = true}
-anilibria-py = "^1.0.0"
+anilibria-py = "^1.0.1"
 
 
 [build-system]
