@@ -14,7 +14,7 @@ class AiogramClient:
         self.dispatcher = Dispatcher()
         self.bot: Bot = None  # type: ignore
 
-    def command(self, name: Optional[str] = None, description: Optional[str] = None):
+    def command(self, name: Optional[str] = None, description: Optional[str] = None, aliases: list[str] | None = None):
         def wrapper(coro: Callable[..., Coroutine]):
             command_name: str = name or coro.__name__
             command_description: str = description or "No description."
@@ -27,7 +27,7 @@ class AiogramClient:
                     await message.answer(response)
 
             self.dispatcher.message(
-                Command(BotCommand(command=command_name, description=command_description))
+                Command(BotCommand(command=command_name, description=command_description), commands=aliases)
             )(wrapped)
 
         return wrapper
