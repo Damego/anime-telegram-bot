@@ -33,9 +33,9 @@ class AiogramClient:
         return wrapper
 
     def start(self, token: str):
-        self.bot = Bot(token, parse_mode="HTML")
+        self.bot = Bot(token, parse_mode="MarkdownV2")
         self.dispatcher.run_polling(self.bot)
 
     async def astart(self, token: str):
-        self.bot = Bot(token, parse_mode="HTML")
+        self.bot = Bot(token, parse_mode="MarkdownV2")
         await self.dispatcher.start_polling(self.bot)
