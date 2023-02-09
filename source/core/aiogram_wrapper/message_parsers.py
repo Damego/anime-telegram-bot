@@ -16,11 +16,11 @@ def get_command_args(coro: Callable[..., Coroutine], message: Message) -> dict[s
     if len(parameters) == 1:
         param = parameters[0]
         if param.annotation in {str, param.empty}:
-            return {parameters[0].name: raw_args}
+            return {param.name: raw_args}
 
     kwargs = {}
-
     last_param = parameters[-1]
+
     for param in parameters:
         if last_param.name != param.name:
             value, raw_args = raw_args.split(maxsplit=1)
