@@ -1,12 +1,11 @@
 from os import environ
 
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 import anilibria
 from dotenv import load_dotenv
 
-from database.client import PostgreClient
-from database.tables import TestTable
-from core import AiogramClient
+
+from core.aiogram_wrapper import AiogramClient
 from core.parsers.parser import Parser
 from utils.responses import title_episode_text
 from utils.utils import build_chrome_driver
@@ -44,6 +43,11 @@ async def on_connect():
     print("Connected to anilibria api")
 
 
+@client.dispatcher.startup()
+async def on_startup():
+    print("telegram bot started")
+
+
 @client.command()
 async def manga(message: Message):
     raw = message.text.split(maxsplit=1)
@@ -57,23 +61,10 @@ async def manga(message: Message):
 
 
 @client.command()
-async def test(message: Message, arg: int, string: str):
-    print(arg, type(arg))
-    print(string, type(string))
-    
-    await message.answer(str(arg))
-
-@client.command()
-async def arg(message: Message, arg: str):
-    await message.answer(str(arg) + " your argument")
-
-
-# @client.command()
-# async def db(message: Message):
-#     await postgres.connect()
-
-#     table = TestTable(id=123, name="me", client=postgres)
-#     await table.create()
+async def test(message: Message, arg: int, text1: str, par: str):
+    print(arg)
+    print(text1)
+    print(par)
 
 
 if __name__ == "__main__":

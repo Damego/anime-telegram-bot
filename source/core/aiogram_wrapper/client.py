@@ -15,20 +15,14 @@ class AiogramClient:
         self.bot: Bot = None  # type: ignore
 
     def command(self, name: Optional[str] = None, description: Optional[str] = None):
-        def wrapper(func: Callable[..., Coroutine]):
-            command_name: str = name or func.__name__
+        def wrapper(coro: Callable[..., Coroutine]):
+            command_name: str = name or coro.__name__
             command_description: str = description or "No description."
 
-            func_args = func.__code__.co_varnames[1:func.__code__.co_argcount]
-            annotated = {
-                arg: func.__annotations__[arg] if arg in func.__annotations__ else str
-                for arg in func_args
-            }
-
             async def wrapped(message: Message):
-                kwargs = get_command_args(message, annotated)
+                kwargs = get_command_args(coro, message)
 
-                response = await func(message, **kwargs)
+                response = await coro(message, **kwargs)
                 if isinstance(response, str):
                     await message.answer(response)
 
