@@ -64,13 +64,17 @@ async def search_anime(message: Message, name: str):
         f"[Постер]({anime.posters.small.full_url})"
     )
 
-    # TODO:
-    #   1. Добавить проверку, что чел уже подписан, и он не может подписаться ещё раз
-    #   2. Если подписан, вывести кнопку для отписки
+    entry = await postgres.get_entry("anime", message.from_user.id, anime.code)
+    if entry:
+        button_text = "Отписаться"
+        callback_data = f"unsubscribe|anime|{anime.code}"
+    else:
+        button_text = "Подписаться"
+        callback_data = f"subscribe|anime|{anime.code}"
 
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Подписаться", callback_data=f"subscribe|anime|{anime.code}")]
+            [InlineKeyboardButton(text=button_text, callback_data=callback_data)]
         ]
     )
 
@@ -88,6 +92,9 @@ async def on_callback(query: CallbackQuery):
     action, type, code = query.data.split("|")
 
     if action == "subscribe":
+        if await postgres.get_entry(type, query.from_user.id, code):
+            return await query.answer("Вы уже подписаны на данный тайтл")
+
         await postgres.subscribe(type, query.from_user.id, code)
         await query.answer("Вы успешно подписались")
     else:
@@ -99,8 +106,6 @@ async def on_callback(query: CallbackQuery):
 async def test(message: Message):
     print(await postgres.get_all_codes("anime"))
     
-
-
 
 @client.command()
 async def search_manga(message: Message, name: str):
