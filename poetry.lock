@@ -163,14 +163,14 @@ frozenlist = ">=1.1.0"
 
 [[package]]
 name = "anilibria-py"
-version = "1.0.0"
+version = "1.0.1"
 description = "An async API wrapper for the anilibria.tv"
 category = "main"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "anilibria.py-1.0.0-py3-none-any.whl", hash = "sha256:325a757e73886d10db519d308e80cc470fe8ee7d2906d6ab5b6c06b7e45fdfa9"},
-    {file = "anilibria.py-1.0.0.tar.gz", hash = "sha256:ec543071f368395d051a7e32b93eabd886a61acd7b4ab97123506e6bfc221c82"},
+    {file = "anilibria.py-1.0.1-py3-none-any.whl", hash = "sha256:d1ed32b49c256bdf173ab8aeb82c6177d72ba4394efa56b64fc2583f07f6d182"},
+    {file = "anilibria.py-1.0.1.tar.gz", hash = "sha256:5d81afdadebc1d11ac71da9d52ff0dd64dc636c06d36ba5d6616fe820c79f34f"},
 ]
 
 [package.dependencies]
@@ -1094,4 +1094,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4dd093a27a1c7f723a21111e74ddf65773751f09e764b5d2c35b62eb12e91173"
+content-hash = "9386fe7b8dd39ed8f1dfd718be07611aa44ec682e3e87125e4e562f7f7e4e274"
