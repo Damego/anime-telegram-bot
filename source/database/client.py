@@ -22,50 +22,42 @@ class PostgreClient:
     async def create_tables(self):
         await self.connection.execute(
             """
-            CREATE TABLE IF NOT EXISTS anime(
-                user_id INT NOT NULL,
+            CREATE TABLE IF NOT EXISTS subscriptions(
+                user_id varchar(255) NOT NULL,
+                title_type varchar(10) NOT NULL,
                 code varchar(255) NOT NULL
             )
             """
         )
         await self.connection.execute(
             """
-            CREATE TABLE IF NOT EXISTS manga(
-                user_id INT NOT NULL,
+            CREATE TABLE IF NOT EXISTS chapters(
+                title_type varchar(255) NOT NULL,
                 code varchar(255) NOT NULL,
-                chapter varchar(50) NOT NULL
-            )
-            """
-        )
-        await self.connection.execute(
-            """
-            CREATE TABLE IF NOT EXISTS ranobe(
-                user_id INT NOT NULL,
-                code varchar(255) NOT NULL,
-                chapter varchar(50) NOT NULL
+                chapter varchar(255) NOT NULL
             )
             """
         )
 
-    async def subscribe(self, table_name: str, user_id: int, code: str):
-        await self.connection.execute(f"INSERT INTO {table_name} VALUES ($1, $2)", user_id, code)
+    async def subscribe(self, title_type: str, user_id: int, code: str):
+        await self.connection.execute(f"INSERT INTO subscriptions VALUES ($1, $2, $3)", str(user_id), title_type, code)
 
-    async def unsubscribe(self, table_name: str, user_id: int, code: str):
+    async def unsubscribe(self, title_type: str, user_id: int, code: str):
         await self.connection.execute(
-            f"DELETE FROM {table_name} WHERE user_id=$1 AND code=$2", user_id, code
+            f"DELETE FROM subscriptions WHERE user_id=$1 AND title_type=$2 AND code=$3", str(user_id), title_type, code
         )
 
-    async def get_users_from_code(self, table_name: str, code: str) -> list[asyncpg.Record]:
+    async def get_users_from_code(self, title_type: str, code: str) -> list[asyncpg.Record]:
         return await self.connection.fetch(
-            f"SELECT user_id FROM {table_name} WHERE code=$1", code
+            f"SELECT user_id FROM subscriptions WHERE title_type=$1, code=$12", title_type, code
         )
 
-    async def get_all_codes(self, table_name: str) -> list[asyncpg.Record]:
+    async def get_title_codes(self, title_type: str) -> list[asyncpg.Record]:
         return await self.connection.fetch(
-            f"SELECT DISTINCT code FROM {table_name}"
+            f"SELECT DISTINCT code FROM subscriptions WHERE title_type=$1", title_type
         )
 
-    async def get_entry(self, table_name: str, user_id: int, code: str) -> list[asyncpg.Record]:
-        return await self.connection.fetchrow(
-            f"SELECT * from {table_name} WHERE user_id=$1 AND code=$2", user_id, code
+    async def get_subscription_entry(self, title_type: str, user_id: int, code: str) -> list[asyncpg.Record]:
+        return await self.connection.fetch(
+            f"SELECT * from subscriptions WHERE user_id=$1 AND title_type=$2 AND code=$3", str(user_id), title_type, code
         )
