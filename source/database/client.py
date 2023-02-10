@@ -64,3 +64,8 @@ class PostgreClient:
         return await self.connection.fetch(
             f"SELECT DISTINCT code FROM {table_name}"
         )
+
+    async def get_row(self, table_name: str, user_id: int, code: str) -> list[asyncpg.Record]:
+        return await self.connection.fetchrow(
+            f"SELECT * from {table_name} WHERE user_id=$1 AND code=$2", user_id, code
+        )
