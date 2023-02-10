@@ -22,7 +22,7 @@ class PostgreClient:
     async def create_tables(self):
         await self.connection.execute(
             """
-            CREATE TABLE anime(
+            CREATE TABLE IF NOT EXISTS anime(
                 user_id INT NOT NULL,
                 code varchar(255) NOT NULL
             )
@@ -30,7 +30,7 @@ class PostgreClient:
         )
         await self.connection.execute(
             """
-            CREATE TABLE manga(
+            CREATE TABLE IF NOT EXISTS manga(
                 user_id INT NOT NULL,
                 code varchar(255) NOT NULL,
                 chapter varchar(50) NOT NULL
@@ -39,7 +39,7 @@ class PostgreClient:
         )
         await self.connection.execute(
             """
-            CREATE TABLE ranobe(
+            CREATE TABLE IF NOT EXISTS ranobe(
                 user_id INT NOT NULL,
                 code varchar(255) NOT NULL,
                 chapter varchar(50) NOT NULL
