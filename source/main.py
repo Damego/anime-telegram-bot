@@ -25,7 +25,7 @@ anilibria_client = anilibria.AniLibriaClient()
 
 postgres = PostgreClient(
     host=environ["HOST"],
-    user=environ["USER"],
+    user=environ["LOGIN"],
     password=environ["PASSWORD"]
 )
 
@@ -42,7 +42,7 @@ async def on_startup():
     # await postgres.create_tables()
 
 
-@anilibria_client.event()
+@anilibria_client.listen
 async def on_title_episode(event: anilibria.TitleEpisode):
     await client.bot.send_message(724170445, title_episode_text(event))
 
@@ -88,16 +88,18 @@ async def on_callback(query: CallbackQuery):
     action, type, code = query.data.split("|")
 
     if action == "subscribe":
-        await postgres.connection.execute(
-            f"INSERT INTO {type} VALUES ($1, $2)", query.from_user.id, code)
-
+        await postgres.subscribe(type, query.from_user.id, code)
         await query.answer("Вы успешно подписались")
     else:
-        code_field = f"{type}_code"
-        await postgres.connection.execute(
-            f"DELETE FROM {type} WHERE user_id=$1 AND $2=$3", query.from_user.id, code_field, code
-        )
+        await postgres.unsubscribe(type, query.from_user.id, code)
         await query.answer("Вы успешно отписались")
+
+
+@client.command()
+async def test(message: Message):
+    print(await postgres.get_all_codes("anime"))
+    
+
 
 
 @client.command()
@@ -111,6 +113,7 @@ async def search_ranobe(message: Message, name: str):
 
 
 if __name__ == "__main__":
-    anilibria_client.startwith(
-        client.astart(environ["TOKEN"])
-    )
+    client.start(environ["TOKEN"])
+    # anilibria_client.startwith(
+    #     client.astart(environ["TOKEN"])
+    # )
