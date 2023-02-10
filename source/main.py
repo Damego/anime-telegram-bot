@@ -44,7 +44,10 @@ async def on_startup():
 
 @anilibria_client.listen
 async def on_title_episode(event: anilibria.TitleEpisode):
-    await client.bot.send_message(724170445, title_episode_text(event))
+    users = await postgres.get_users_from_code("anime", event.title.code)
+
+    for user in users:
+        await client.bot.send_message(user[0], title_episode_text(event))
 
 
 @client.command("search_anime", aliases=["поиск_аниме", "sa", "па"])
