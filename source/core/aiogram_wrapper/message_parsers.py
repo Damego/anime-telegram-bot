@@ -7,7 +7,10 @@ __all__ = ("get_command_args", )
 
 
 def get_command_args(coro: Callable[..., Coroutine], message: Message) -> dict[str, Any]:
-    raw_args = message.text.split(maxsplit=1)[1]  # Remove command text
+    raw_args = message.text.split(maxsplit=1)
+    if len(raw_args) == 1:
+        return {}  
+    raw_args = raw_args[1] # Remove command text
     parameters = list(signature(coro).parameters.values())[1:]  # Ignore message parameter
 
     if not parameters:
