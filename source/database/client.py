@@ -24,7 +24,7 @@ class PostgreClient:
             """
             CREATE TABLE anime(
                 user_id INT NOT NULL,
-                anime_code varchar(255) NOT NULL
+                code varchar(255) NOT NULL
             )
             """
         )
@@ -32,7 +32,7 @@ class PostgreClient:
             """
             CREATE TABLE manga(
                 user_id INT NOT NULL,
-                manga_code varchar(255) NOT NULL,
+                code varchar(255) NOT NULL,
                 chapter varchar(50) NOT NULL
             )
             """
@@ -41,8 +41,26 @@ class PostgreClient:
             """
             CREATE TABLE ranobe(
                 user_id INT NOT NULL,
-                ranobe_code varchar(255) NOT NULL,
+                code varchar(255) NOT NULL,
                 chapter varchar(50) NOT NULL
             )
             """
+        )
+
+    async def subscribe(self, table_name: str, user_id: int, code: str):
+        await self.connection.execute(f"INSERT INTO {table_name} VALUES ($1, $2)", user_id, code)
+
+    async def unsubscribe(self, table_name: str, user_id: int, code: str):
+        await self.connection.execute(
+            f"DELETE FROM {table_name} WHERE user_id=$1 AND code=$2", user_id, code
+        )
+
+    async def get_users_from_code(self, table_name: str, code: str) -> list[asyncpg.Record]:
+        return await self.connection.fetch(
+            f"SELECT user_id FROM {table_name} WHERE code=$1", code
+        )
+
+    async def get_all_codes(self, table_name: str) -> list[asyncpg.Record]:
+        return await self.connection.fetch(
+            f"SELECT DISTINCT code FROM {table_name}"
         )
