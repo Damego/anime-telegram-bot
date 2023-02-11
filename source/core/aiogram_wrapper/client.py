@@ -33,7 +33,6 @@ class AiogramClient:
 
     def __resolve_commands(self):
         for command in self._commands:
-            print(command.name)
             command.router.message(
                 FilterCommand(BotCommand(command=command.name, description=command.description), commands=command.aliases)
             )(command.call)
