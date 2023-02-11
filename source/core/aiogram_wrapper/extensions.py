@@ -9,6 +9,8 @@ from aiogram.dispatcher.event.telegram import TelegramEventObserver
 from .client import AiogramClient
 from .command import Command
 
+__all__ = ("ExtensionRouter", "command", "message", "callback_query")
+
 
 class ExtensionRouter:
     client: AiogramClient
@@ -20,6 +22,8 @@ class ExtensionRouter:
         self.router = Router(name=cls.__name__)
 
         self.__register_handlers()
+
+        return self
 
     def __register_handlers(self):
         for func_name, func in inspect.getmembers(self, predicate=iscoroutinefunction):
@@ -57,6 +61,11 @@ def _handler(handler_name: str, *args, **kwargs):
 @wraps(TelegramEventObserver.__call__)
 def message(*args, **kwargs):
     return _handler("message", *args, **kwargs)
+
+
+@wraps(TelegramEventObserver.__call__)
+def callback_query(*args, **kwargs):
+    return _handler("callback_query", *args, **kwargs)
 
 
 @wraps(AiogramClient.command)
