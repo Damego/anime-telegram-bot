@@ -1,12 +1,12 @@
 from typing import Callable, Coroutine, Optional
 
-from aiogram import Dispatcher, Bot
+from aiogram import Bot, Dispatcher
 from aiogram.filters import Command as FilterCommand
 from aiogram.types import BotCommand
 
 from .command import Command
 
-__all__ = ("AiogramClient", )
+__all__ = ("AiogramClient",)
 
 
 class AiogramClient:
@@ -16,7 +16,12 @@ class AiogramClient:
 
         self._commands: list[Command] = []
 
-    def command(self, name: Optional[str] = None, description: Optional[str] = None, aliases: list[str] | None = None):
+    def command(
+        self,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        aliases: list[str] | None = None,
+    ):
         def decorator(coro: Callable[..., Coroutine]):
             command_name: str = name or coro.__name__
             command_description: str = description or "No description."
@@ -34,7 +39,10 @@ class AiogramClient:
     def __resolve_commands(self):
         for command in self._commands:
             command.router.message(
-                FilterCommand(BotCommand(command=command.name, description=command.description), commands=command.aliases)
+                FilterCommand(
+                    BotCommand(command=command.name, description=command.description),
+                    commands=command.aliases,
+                )
             )(command.call)
 
     def start(self, token: str):

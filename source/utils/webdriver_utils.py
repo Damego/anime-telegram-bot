@@ -8,6 +8,4 @@ def build_chrome_driver() -> webdriver.Chrome:
     options = Options()
     options.add_argument("--headless")
 
-    return webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()), options=options
-    )
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)

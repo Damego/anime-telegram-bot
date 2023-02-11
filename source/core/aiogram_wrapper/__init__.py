@@ -1,3 +1,3 @@
-from .client import *
-from .command import *
-from .extensions import *
+from .client import *  # noqa
+from .command import *  # noqa
+from .extensions import *  # noqa

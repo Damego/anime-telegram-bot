@@ -1,1 +1,1 @@
-from .aiogram_wrapper import *
+from .aiogram_wrapper import *  # noqa

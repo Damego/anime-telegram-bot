@@ -1,12 +1,13 @@
 import re
 
 import anilibria
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from .base import ExtensionRouter
+from source.core.aiogram_wrapper import callback_query, command
 from source.utils.responses import title_episode_text
 from source.utils.text_processing import prepare_markdown_text
-from source.core.aiogram_wrapper import command, callback_query
+
+from .base import ExtensionRouter
 
 callback_pattern = re.compile(r"(un)?subscribe\|(anime|manga|ranobe)")
 single_title_pattern = re.compile(r"Код: [0-9a-z-_]+")
@@ -15,17 +16,16 @@ select_anime_text_pattern = re.compile(r"\*[0-9]+\* [0-9a-z-_]+")
 
 
 class AnimeRouter(ExtensionRouter):
-    def __init__(
-        self,
-        client,
-        postgres,
-        anilibria_client
-    ):
+    def __init__(self, client, postgres, anilibria_client):
         self.client = client
         self.postgres = postgres
         self.anilibria_client: anilibria.AniLibriaClient = anilibria_client
 
         self.anilibria_client.listen(self.on_title_episode)
+        self.anilibria_client.listen(self.on_connect)
+
+    async def on_connect(self, connect: anilibria.Connect):
+        print(f"Connected to anilibria api {connect.api_version}")
 
     async def on_title_episode(self, event: anilibria.TitleEpisode):
         users = await self.postgres.get_users_from_code("anime", event.title.code)
@@ -36,15 +36,15 @@ class AnimeRouter(ExtensionRouter):
     @command(aliases=["поиск_аниме", "sa", "па"])
     async def search_anime(self, message: Message, name: str):
         response = await self.anilibria_client.search_titles(
-            name,
-            remove=["player.list", "torrents"],
-            items_per_page=8
+            name, remove=["player.list", "torrents"], items_per_page=10
         )
         if not response.list:
             return "Ничего не найдено"
 
         if len(response.list) == 1:
-            return await self.process_single_anime_title(message, message.from_user.id, response.list[0])
+            return await self.process_single_anime_title(
+                message, message.from_user.id, response.list[0]
+            )
 
         text = f"Поиск: {name} \n\n"
         buttons = []
@@ -52,15 +52,19 @@ class AnimeRouter(ExtensionRouter):
         for counter, title in enumerate(response.list, start=1):
             text += f"*{counter}* {prepare_markdown_text(title.names.ru)} \n"
             buttons.append(
-                [InlineKeyboardButton(text=title.names.ru, callback_data=f"select|anime|{title.id}")]
+                [
+                    InlineKeyboardButton(
+                        text=title.names.ru, callback_data=f"select|anime|{title.id}"
+                    )
+                ]
             )
 
-        keyboard = InlineKeyboardMarkup(
-            inline_keyboard=buttons
-        )
+        keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
         await message.reply(text, reply_markup=keyboard)
 
-    async def process_single_anime_title(self, message: Message, user_id: int, title: anilibria.Title):
+    async def process_single_anime_title(
+        self, message: Message, user_id: int, title: anilibria.Title
+    ):
         code = prepare_markdown_text(title.code)
 
         total_episodes = f"/ {episodes}" if (episodes := title.type.episodes) else ""
@@ -75,15 +79,13 @@ class AnimeRouter(ExtensionRouter):
         entry = await self.postgres.get_subscription_entry("anime", user_id, title.code)
         if entry:
             button_text = "Отписаться"
-            callback_data = f"unsubscribe|anime"
+            callback_data = "unsubscribe|anime"
         else:
             button_text = "Подписаться"
-            callback_data = f"subscribe|anime"
+            callback_data = "subscribe|anime"
 
         keyboard = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [InlineKeyboardButton(text=button_text, callback_data=callback_data)]
-            ]
+            inline_keyboard=[[InlineKeyboardButton(text=button_text, callback_data=callback_data)]]
         )
 
         await message.answer(text, reply_markup=keyboard)
@@ -111,7 +113,9 @@ class AnimeRouter(ExtensionRouter):
             return await query.answer("Ошибка в коде")
         code: str = matches[0][5:]
 
-        is_subscribed = await self.postgres.get_subscription_entry(title_type, query.from_user.id, code)
+        is_subscribed = await self.postgres.get_subscription_entry(
+            title_type, query.from_user.id, code
+        )
 
         if action == "subscribe":
             if is_subscribed:
@@ -125,4 +129,3 @@ class AnimeRouter(ExtensionRouter):
 
             await self.postgres.unsubscribe(title_type, query.from_user.id, code)
             await query.answer("Вы успешно отписались")
-

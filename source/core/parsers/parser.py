@@ -1,17 +1,18 @@
 import datetime
 from urllib.parse import quote
 
+from cattrs import structure
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from cattrs import structure
 
-from .models import Data, Chapter
-
+from .models import Chapter, Data
 
 time_format = "%d.%m.%Y"
-xpath = '//*[@id="main-page"]/div/div/div/div[2]/div[2]/div[3]/div/div[1]/div[1]/div[2]/div[{index}]'
+xpath = (
+    '//*[@id="main-page"]/div/div/div/div[2]/div[2]/div[3]/div/div[1]/div[1]/div[2]/div[{index}]'
+)
 
 
 def get_search_url(domain: str, title_name: str) -> str:
@@ -33,7 +34,7 @@ class Parser:
         # Getting data of manga
         data = {
             "name": self.driver.find_element(By.CLASS_NAME, "media-name__main").text,
-            "url": url
+            "url": url,
         }
 
         image_card = self.driver.find_element(By.CLASS_NAME, "media-sidebar__cover")
@@ -73,24 +74,18 @@ class Parser:
 
     def get_chapter_from_team(self):
         team_list = self.driver.find_element(By.CLASS_NAME, "team-list")
-        teams: list[WebElement] = team_list.find_elements(
-            By.CLASS_NAME, "team-list-item"
-        )
+        teams: list[WebElement] = team_list.find_elements(By.CLASS_NAME, "team-list-item")
 
         data = {}
 
         for i in range(len(teams)):
-            team = team_list.find_element(
-                By.XPATH, xpath.format(index=i + 1)
-            )
+            team = team_list.find_element(By.XPATH, xpath.format(index=i + 1))
             # Получаем элемент через XPATH, т.к. иначе на него нельзя нажать
             team.click()
             # Нажимаем, чтобы получить все части перевода от команды
 
             chapter = self._get_latest_team_chapter()
-            chapter_url = chapter.find_element(
-                By.CLASS_NAME, "link-default"
-            ).get_attribute("href")
+            chapter_url = chapter.find_element(By.CLASS_NAME, "link-default").get_attribute("href")
             chapter_data = chapter.text.splitlines()
             time = chapter_data[2]
             dtime = datetime.datetime.strptime(time, time_format)
@@ -99,9 +94,7 @@ class Parser:
         return self.filter_chapters_by_time(data)
 
     def _get_latest_team_chapter(self) -> WebElement:
-        chapters = self.driver.find_elements(
-            By.CLASS_NAME, "vue-recycle-scroller__item-view"
-        )
+        chapters = self.driver.find_elements(By.CLASS_NAME, "vue-recycle-scroller__item-view")
         for chapter in chapters:
             attr = chapter.get_attribute("style")
             if attr == "transform: translateY(0px);":

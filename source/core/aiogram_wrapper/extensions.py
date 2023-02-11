@@ -1,10 +1,10 @@
-from asyncio import iscoroutinefunction
-from typing import Coroutine, Callable
-from functools import wraps
 import inspect
+from asyncio import iscoroutinefunction
+from functools import wraps
+from typing import Callable, Coroutine
 
-from aiogram.dispatcher.router import Router
 from aiogram.dispatcher.event.telegram import TelegramEventObserver
+from aiogram.dispatcher.router import Router
 
 from .client import AiogramClient
 from .command import Command
@@ -37,7 +37,9 @@ class ExtensionRouter:
             observer: TelegramEventObserver = getattr(self.router, name)
             observer.register(func, *args, **kwargs)
 
-        for func_name, cmd in inspect.getmembers(self, predicate=lambda _func: isinstance(_func, Command)):
+        for func_name, cmd in inspect.getmembers(
+            self, predicate=lambda _func: isinstance(_func, Command)
+        ):
             cmd: Command
 
             cmd.client = self.client
@@ -55,6 +57,7 @@ def _handler(handler_name: str, *args, **kwargs):
         coro.__handler_data__ = handler_name, args, kwargs
 
         return coro
+
     return wrapper
 
 
@@ -75,4 +78,3 @@ def command(*args, **kwargs):
         return _command
 
     return decorator
-

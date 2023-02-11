@@ -16,7 +16,7 @@ class PostgreClient:
             port=self._port,
             user=self._user,
             password=self._password,
-            database="anime-telegram-bot-db"
+            database="anime-telegram-bot-db",
         )
 
     async def create_tables(self):
@@ -40,24 +40,39 @@ class PostgreClient:
         )
 
     async def subscribe(self, title_type: str, user_id: int, code: str):
-        await self.connection.execute(f"INSERT INTO subscriptions VALUES ($1, $2, $3)", str(user_id), title_type, code)
+        await self.connection.execute(
+            "INSERT INTO subscriptions VALUES ($1, $2, $3)",
+            str(user_id),
+            title_type,
+            code,
+        )
 
     async def unsubscribe(self, title_type: str, user_id: int, code: str):
         await self.connection.execute(
-            f"DELETE FROM subscriptions WHERE user_id=$1 AND title_type=$2 AND code=$3", str(user_id), title_type, code
+            "DELETE FROM subscriptions WHERE user_id=$1 AND title_type=$2 AND code=$3",
+            str(user_id),
+            title_type,
+            code,
         )
 
     async def get_users_from_code(self, title_type: str, code: str) -> list[asyncpg.Record]:
         return await self.connection.fetch(
-            f"SELECT user_id FROM subscriptions WHERE title_type=$1, code=$12", title_type, code
+            "SELECT user_id FROM subscriptions WHERE title_type=$1, code=$12",
+            title_type,
+            code,
         )
 
     async def get_title_codes(self, title_type: str) -> list[asyncpg.Record]:
         return await self.connection.fetch(
-            f"SELECT DISTINCT code FROM subscriptions WHERE title_type=$1", title_type
+            "SELECT DISTINCT code FROM subscriptions WHERE title_type=$1", title_type
         )
 
-    async def get_subscription_entry(self, title_type: str, user_id: int, code: str) -> list[asyncpg.Record]:
+    async def get_subscription_entry(
+        self, title_type: str, user_id: int, code: str
+    ) -> list[asyncpg.Record]:
         return await self.connection.fetch(
-            f"SELECT * from subscriptions WHERE user_id=$1 AND title_type=$2 AND code=$3", str(user_id), title_type, code
+            "SELECT * from subscriptions WHERE user_id=$1 AND title_type=$2 AND code=$3",
+            str(user_id),
+            title_type,
+            code,
         )

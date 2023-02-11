@@ -1,5 +1,5 @@
-from typing import Callable, Coroutine, TYPE_CHECKING, Optional, Any
 from inspect import getdoc, signature
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional
 
 from aiogram.dispatcher.router import Router
 from aiogram.types import Message
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from .extensions import ExtensionRouter
 
 
-__all__ = ("Command", )
+__all__ = ("Command",)
 
 
 class Command:
@@ -17,7 +17,13 @@ class Command:
     extension: Optional["ExtensionRouter"]
     router: Router
 
-    def __init__(self, coro: Callable[..., Coroutine], name: str | None = None, description: str | None = None, aliases: list[str] | None = None):
+    def __init__(
+        self,
+        coro: Callable[..., Coroutine],
+        name: str | None = None,
+        description: str | None = None,
+        aliases: list[str] | None = None,
+    ):
         self._coro = coro
         self.name = name or coro.__name__
         self.description = description or getdoc(coro) or "No description."
@@ -46,7 +52,9 @@ class Command:
             return {}
 
         raw_args = raw_args[1]  # Remove command text
-        parameters = list(signature(self._coro).parameters.values())[split_limit:]  # Ignore message parameter
+        parameters = list(signature(self._coro).parameters.values())[
+            split_limit:
+        ]  # Ignore message parameter
 
         if not parameters:
             return {}
@@ -65,9 +73,8 @@ class Command:
             else:
                 value = raw_args
 
-            kwargs[param.name] = param.annotation(value) if param.annotation not in {str, param.empty} else value
+            kwargs[param.name] = (
+                param.annotation(value) if param.annotation not in {str, param.empty} else value
+            )
 
         return kwargs
-
-
-

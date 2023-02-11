@@ -1,3 +1,11 @@
+[tool.black]
+exclude = '/(\.eggs|\.git|\.mypy_cache|\.venv.*|_build|build|dist)/'
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
 [tool.poetry]
 name = "anime-telegram-bot"
 version = "0.1.0"
@@ -14,6 +22,9 @@ webdriver-manager = "^3.8.5"
 aiogram = {version = "^3.0.0b6", allow-prereleases = true}
 anilibria-py = "^1.0.1"
 
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.0.4"
 
 [build-system]
 requires = ["poetry-core"]

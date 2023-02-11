@@ -1,2 +1,2 @@
-from .parser import Parser
-from .models import Chapter, Data
+from .models import Chapter, Data  # noqa
+from .parser import Parser  # noqa

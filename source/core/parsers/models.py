@@ -1,6 +1,5 @@
 from attrs import define
 
-
 __all__ = ("Chapter", "Data")
 
 
@@ -16,4 +15,3 @@ class Data:
     image_url: str
     url: str
     last_chapter: Chapter
-
