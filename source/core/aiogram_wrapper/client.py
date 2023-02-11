@@ -1,10 +1,10 @@
 from typing import Callable, Coroutine, Optional
 
 from aiogram import Dispatcher, Bot
-from aiogram.filters import Command
-from aiogram.types import BotCommand, Message
+from aiogram.filters import Command as FilterCommand
+from aiogram.types import BotCommand
 
-from .message_parsers import get_command_args
+from .command import Command
 
 __all__ = ("AiogramClient", )
 
@@ -14,28 +14,36 @@ class AiogramClient:
         self.dispatcher = Dispatcher()
         self.bot: Bot = None  # type: ignore
 
+        self._commands: list[Command] = []
+
     def command(self, name: Optional[str] = None, description: Optional[str] = None, aliases: list[str] | None = None):
-        def wrapper(coro: Callable[..., Coroutine]):
+        def decorator(coro: Callable[..., Coroutine]):
             command_name: str = name or coro.__name__
             command_description: str = description or "No description."
 
-            async def wrapped(message: Message):
-                kwargs = get_command_args(coro, message)
+            command = Command(coro, command_name, command_description, aliases)
+            command.client = self
+            command.router = self.dispatcher
 
-                response = await coro(message, **kwargs)
-                if isinstance(response, str):
-                    await message.answer(response)
+            self._commands.append(command)
 
-            self.dispatcher.message(
-                Command(BotCommand(command=command_name, description=command_description), commands=aliases)
-            )(wrapped)
+            return command
 
-        return wrapper
+        return decorator
+
+    def __resolve_commands(self):
+        for command in self._commands:
+            print(command.name)
+            command.router.message(
+                FilterCommand(BotCommand(command=command.name, description=command.description), commands=command.aliases)
+            )(command.call)
 
     def start(self, token: str):
         self.bot = Bot(token, parse_mode="MarkdownV2")
+        self.__resolve_commands()
         self.dispatcher.run_polling(self.bot)
 
     async def astart(self, token: str):
         self.bot = Bot(token, parse_mode="MarkdownV2")
+        self.__resolve_commands()
         await self.dispatcher.start_polling(self.bot)
