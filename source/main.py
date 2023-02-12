@@ -2,9 +2,10 @@ from os import environ
 
 import anilibria
 from aiogram.types import Message
+from dotenv import load_dotenv
+
 from core.aiogram_wrapper import AiogramClient
 from database.client import PostgreClient
-from dotenv import load_dotenv
 from extensions.anime import AnimeRouter
 
 load_dotenv()

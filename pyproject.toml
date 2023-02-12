@@ -5,6 +5,7 @@ line-length = 100
 [tool.isort]
 profile = "black"
 line_length = 100
+known_first_party = ["source", "core", "utils", "database", "extensions"]
 
 [tool.poetry]
 name = "anime-telegram-bot"
