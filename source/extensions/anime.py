@@ -17,8 +17,6 @@ select_anime_text_pattern = re.compile(r"\*[0-9]+\* [0-9a-z-_]+")
 
 class AnimeRouter(ExtensionRouter):
     def __init__(self, client, postgres, anilibria_client):
-        self.client = client
-        self.postgres = postgres
         self.anilibria_client: anilibria.AniLibriaClient = anilibria_client
 
         self.anilibria_client.listen(self.on_title_episode)
