@@ -1,11 +1,16 @@
+import asyncio
 import datetime
+import logging
+from contextlib import suppress
+from functools import partial
 from urllib.parse import quote
 
 from cattrs import structure
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+
+from source.utils.webdriver_utils import build_chrome_driver
 
 from .models import Chapter, Data
 
@@ -20,18 +25,41 @@ def get_search_url(domain: str, title_name: str) -> str:
 
 
 class Parser:
-    def __init__(self, driver: webdriver.Chrome, domain: str) -> None:
-        self.driver = driver
+    def __init__(self, domain: str) -> None:
+        self.driver = build_chrome_driver()
         self.domain = domain
-        self.is_busy = False
+        self.not_processing = asyncio.Event()
+
+        self.not_processing.set()
+
+    async def get_title_async(self, name: str) -> Data | None:
+        await self.not_processing.wait()
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(self.get_title, name))
 
     def get_title(self, name: str) -> Data | None:
-        self.is_busy = True
-        url = self.search_title(name)
+        self.not_processing.clear()
+
+        try:
+            title = self._get_title(name)
+        except Exception:  # noqa
+            logging.exception("")
+            title = None
+
+        self.not_processing.set()
+        return title
+
+    def _get_title(self, name: str) -> Data | None:
+        url = self.get_title_url_from_name(name)
+
+        if self.check_for_captcha():
+            return
 
         self.driver.get(url=url)
 
-        # Getting data of manga
+        if self.check_for_captcha():
+            return
+
         data = {
             "name": self.driver.find_element(By.CLASS_NAME, "media-name__main").text,
             "url": url,
@@ -45,17 +73,34 @@ class Parser:
         last_chapter_data = self._get_latest_chapter()
         data["last_chapter"] = last_chapter_data
 
-        self.is_busy = False
         return structure(data, Data)
 
-    def search_title(self, name: str) -> str | None:
-        self.driver.get(url=get_search_url(self.domain, name))
-        try:
-            url = self.driver.find_element(By.CLASS_NAME, "media-card").get_attribute("href")
-        except NoSuchElementException:
-            return
+    def check_for_captcha(self) -> bool:
+        if not self.is_captcha:
+            return False
 
-        return url
+        url = self.driver.current_url
+        logging.warning("Received captcha. Reloading driver")
+        self.driver.close()
+
+        self.driver = build_chrome_driver()
+        self.driver.get(url)
+        if self.is_captcha:
+            logging.warning("Captcha still here. Returning empty response")
+            return True
+        return False
+
+    @property
+    def is_captcha(self) -> bool:
+        with suppress(NoSuchElementException):
+            return not self.driver.find_element(By.CLASS_NAME, "header")
+        return True
+
+    def get_title_url_from_name(self, name: str) -> str | None:
+        self.driver.get(url=get_search_url(self.domain, name))
+
+        with suppress(NoSuchElementException):
+            return self.driver.find_element(By.CLASS_NAME, "media-card").get_attribute("href")
 
     def _get_latest_chapter(self) -> dict | None:
         try:
