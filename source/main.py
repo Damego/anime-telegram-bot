@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from core.aiogram_wrapper import AiogramClient
 from database.client import PostgreClient
 from extensions.anime import AnimeRouter
+from extensions.manobe import Manobe
 
 load_dotenv()
 
@@ -17,10 +18,7 @@ client = AiogramClient()
 anilibria_client = anilibria.AniLibriaClient()
 
 AnimeRouter(client, postgres, anilibria_client)
-
-# webdriver = build_chrome_driver()
-# manga = Parser(webdriver, "mangalib.me")
-# ranobe = Parser(webdriver, "ranobelib.me")
+Manobe(client, postgres)
 
 
 @client.dispatcher.startup()

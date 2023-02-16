@@ -6,4 +6,6 @@ def prepare_markdown_text(text: str) -> str:
         .replace("-", "\\-")
         .replace("_", "\\_")
         .replace("!", "\\!")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
     )
