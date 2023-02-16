@@ -19,14 +19,14 @@ class Task:
         self._loop: asyncio.AbstractEventLoop | None = None
         self._running = asyncio.Event()
 
-    def start(self):
+    def start(self, *args, **kwargs):
         self._loop = asyncio.get_event_loop()
         self._running.set()
-        self._loop.create_task(self.run())
+        self._loop.create_task(self.run(*args, **kwargs))
 
-    async def run(self):
+    async def run(self, *args, **kwargs):
         while self._running.is_set():
-            self._loop.create_task(self.coro())
+            self._loop.create_task(self.coro(*args, **kwargs))
             await asyncio.sleep(self.interval)
 
     def stop(self):
